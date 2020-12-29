@@ -66,9 +66,9 @@ class _UpdateText extends State<UpdateText> {
   }
 
   Widget infoBox(String str) {
-    String contents = str;
+    String name = str;
     String price = str;
-    return Text("설명 : " + '$contents' + "   가격 : " + '$price');
+    return Text("이름 : " + '$name' + "   가격 : " + '$price');
   }
 }
 
@@ -76,13 +76,18 @@ Widget btnWidget() {
   return Row(children: [
     FlatButton(
         child: new Text(
-      "DELET",
-      style: new TextStyle(color: Colors.redAccent),
-    )),
+          "DELET",
+          style: new TextStyle(color: Colors.redAccent),
+        )),
     FlatButton(
         child: new Text(
-      "EDIT",
-      style: new TextStyle(color: Colors.redAccent),
-    ))
+          "EDIT",
+          style: new TextStyle(color: Colors.redAccent),
+        ))
   ]);
+}
+
+class CheckBoxListTileModel {
+  String name;
+  int price;
 }
