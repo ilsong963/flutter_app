@@ -29,23 +29,25 @@ class UpdateText extends StatefulWidget {
 class _UpdateText extends State<UpdateText> {
   bool _ischecked = false;
 
-
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.all(8),
-      itemCount: 20,
-      itemBuilder: (BuildContext context, int index) {
-        return Container(
-          height: 60,
-          child: Center(child: boxItem()),
-        );
-      },
-      separatorBuilder: (BuildContext context, int index) => const Divider(),
-    );
+    return Column(children: [
+      Expanded(child: ListView.separated(
+        padding: const EdgeInsets.all(8),
+        itemCount: 20,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            height: 60,
+            child: Center(child: boxItem()),
+          );
+        },
+        separatorBuilder: (BuildContext context, int index) => const Divider(),
+      )),
+      btnWidget(),
+    ]);
   }
 
-  Widget boxItem(){
+  Widget boxItem() {
     return CheckboxListTile(
       title: Text("상품"),
       subtitle: infoBox("1"),
@@ -67,7 +69,6 @@ class _UpdateText extends State<UpdateText> {
     String contents = str;
     String price = str;
     return Text("설명 : " + '$contents' + "   가격 : " + '$price');
-
   }
 }
 
