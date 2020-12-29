@@ -3,82 +3,85 @@ import 'package:flutter/material.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(home: Scaffold(body: Center(child: UpdateText())));
-  }
-}
-
-class UpdateText extends StatefulWidget {
-  UpdateTextState createState() => UpdateTextState();
-}
-
-class UpdateTextState extends State {
-  String textHolder = 'Old Sample Text...!!!';
-  final myController = TextEditingController();
-
-  changeText(String str) {
-    setState(() {
-      textHolder = str;
-    });
-    Navigator.pop(context);
-  }
+  static const String _title = '';
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Flutter Dialog'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('$textHolder'),
-            Padding(padding: EdgeInsets.only(top: 40.0)),
-            RaisedButton(
-              child: Text(
-                'Dialog Open',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.blue,
-                ),
-              ),
-              onPressed: () => FlutterDialog(),
-            )
-          ],
+    return MaterialApp(
+      title: _title,
+      home: Scaffold(
+        appBar: AppBar(title: const Text(_title)),
+        body: Center(
+          child: UpdateText(),
         ),
       ),
     );
   }
+}
 
-  void FlutterDialog() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Column(
-              children: <Widget>[
-                new Text("Dialog Title"),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                TextField(
-                  controller: myController,
-                ),
-              ],
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text("확인"),
-                onPressed: () => changeText(myController.text),
-              ),
-            ],
-          );
-        });
+class UpdateText extends StatefulWidget {
+  UpdateText({Key key}) : super(key: key);
+
+  @override
+  _UpdateText createState() => _UpdateText();
+}
+
+class _UpdateText extends State<UpdateText> {
+  bool _ischecked = false;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      padding: const EdgeInsets.all(8),
+      itemCount: 20,
+      itemBuilder: (BuildContext context, int index) {
+        return Container(
+          height: 60,
+          child: Center(child: boxItem()),
+        );
+      },
+      separatorBuilder: (BuildContext context, int index) => const Divider(),
+    );
   }
+
+  Widget boxItem(){
+    return CheckboxListTile(
+      title: Text("상품"),
+      subtitle: infoBox("1"),
+      value: _ischecked,
+      onChanged: (bool value) {
+        setState(() {
+          _ischecked = value;
+        });
+      },
+      secondary: const Icon(Icons.home),
+      activeColor: Colors.red,
+      checkColor: Colors.black,
+      isThreeLine: false,
+      selected: _ischecked,
+    );
+  }
+
+  Widget infoBox(String str) {
+    String contents = str;
+    String price = str;
+    return Text("설명 : " + '$contents' + "   가격 : " + '$price');
+
+  }
+}
+
+Widget btnWidget() {
+  return Row(children: [
+    FlatButton(
+        child: new Text(
+      "DELET",
+      style: new TextStyle(color: Colors.redAccent),
+    )),
+    FlatButton(
+        child: new Text(
+      "EDIT",
+      style: new TextStyle(color: Colors.redAccent),
+    ))
+  ]);
 }
