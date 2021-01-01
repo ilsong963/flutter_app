@@ -27,11 +27,28 @@ class UpdateText extends StatefulWidget {
   _UpdateText createState() => _UpdateText();
 }
 
-class _UpdateText extends State<UpdateText> {
+class ItemBox{
+  String name;
+  int price;
 
+  ItemBox(String name , int price){
+    this.name = name;
+    this.price = price;
+  }
+
+}
+
+class _UpdateText extends State<UpdateText> {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   bool _ischecked = false;
+  List<ItemBox> boxList = <ItemBox>[];
+
+  void addItemToList() {
+    setState(() {
+      boxList.insert(0, new ItemBox("이름", 1000));
+    });
+  }
 
   @override
   void initState() {
@@ -60,21 +77,22 @@ class _UpdateText extends State<UpdateText> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      Expanded(child: ListView.separated(
-        padding: const EdgeInsets.all(8),
-        itemCount: 20,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            height: 60,
-            child: Center(child: boxItem()),
-          );
-        },
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
-      )),
+      Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.all(8),
+            itemCount: boxList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return Container(
+                height: 60,
+                child: Center(child: boxItem()),
+              );
+            },
+            separatorBuilder: (BuildContext context,
+                int index) => const Divider(),
+          )),
       btnWidget(),
     ]);
   }
@@ -82,7 +100,7 @@ class _UpdateText extends State<UpdateText> {
   Widget boxItem() {
     return CheckboxListTile(
       title: Text("상품"),
-      subtitle: infoBox("1"),
+      subtitle: itemContent(boxList[0].name, boxList[0].price),
       value: _ischecked,
       onChanged: (bool value) {
         setState(() {
@@ -97,29 +115,31 @@ class _UpdateText extends State<UpdateText> {
     );
   }
 
-  Widget infoBox(String str) {
-    String name = str;
-    String price = str;
+  Widget itemContent(String name, int price) {
     return Text("이름 : " + '$name' + "   가격 : " + '$price');
   }
-}
 
-Widget btnWidget() {
-  return Row(children: [
-    FlatButton(
-        child: new Text(
-          "DELET",
-          style: new TextStyle(color: Colors.redAccent),
-        )),
-    FlatButton(
-        child: new Text(
-          "EDIT",
-          style: new TextStyle(color: Colors.redAccent),
-        ))
-  ]);
-}
+  Widget btnWidget() {
+    return Row(children: [
+      FlatButton(
+            child:
+            new Text(
+              "DELET",
+              style: new TextStyle(color: Colors.redAccent),
 
-class CheckBoxListTileModel {
-  String name;
-  int price;
+            )
+      ),
+      FlatButton(
+          onPressed: () {
+            addItemToList();
+          },
+          child: new Text(
+            "ADD",
+            style: new TextStyle(color: Colors.redAccent)
+            ,
+          )
+      )
+    ]
+    );
+  }
 }
