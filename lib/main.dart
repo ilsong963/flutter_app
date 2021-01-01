@@ -39,15 +39,53 @@ class ItemBox{
 }
 
 class _UpdateText extends State<UpdateText> {
+  int listindex = 0;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+  final addItemController_name = TextEditingController();
+  final addItemController_price = TextEditingController();
 
   bool _ischecked = false;
   List<ItemBox> boxList = <ItemBox>[];
 
-  void addItemToList() {
+  void addItemToList(String name, int price) {
     setState(() {
-      boxList.insert(0, new ItemBox("이름", 1000));
+      boxList.insert(listindex, new ItemBox(name, price));
+      listindex++;
     });
+    Navigator.pop(context);
+  }
+  void addDialog() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Column(
+              children: <Widget>[
+                new Text("Dialog Title"),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                TextField(
+                  controller: addItemController_name,
+                ),
+                TextField(
+                  controller: addItemController_price,
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("확인"),
+                onPressed: () => addItemToList(addItemController_name.text,int.parse(addItemController_price.text)),
+              ),
+            ],
+          );
+        });
   }
 
   @override
@@ -131,7 +169,7 @@ class _UpdateText extends State<UpdateText> {
       ),
       FlatButton(
           onPressed: () {
-            addItemToList();
+            addDialog();
           },
           child: new Text(
             "ADD",
