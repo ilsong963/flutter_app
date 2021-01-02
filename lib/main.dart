@@ -27,15 +27,15 @@ class UpdateText extends StatefulWidget {
   _UpdateText createState() => _UpdateText();
 }
 
-class ItemBox{
+class ItemBox {
   String name;
   int price;
+  bool ischecked = false;
 
-  ItemBox(String name , int price){
+  ItemBox(String name, int price) {
     this.name = name;
     this.price = price;
   }
-
 }
 
 class _UpdateText extends State<UpdateText> {
@@ -47,15 +47,17 @@ class _UpdateText extends State<UpdateText> {
 
   bool _ischecked = false;
   List<ItemBox> boxList = <ItemBox>[];
+  int index = 0;
 
   void addItemToList(String name, int price) {
     setState(() {
       boxList.insert(listindex, new ItemBox(name, price));
-      listindex++;
+      listindex = boxList.length;
     });
     Navigator.pop(context);
   }
-  void addDialog() {
+
+  void addItem() {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -81,7 +83,8 @@ class _UpdateText extends State<UpdateText> {
             actions: <Widget>[
               new FlatButton(
                 child: new Text("확인"),
-                onPressed: () => addItemToList(addItemController_name.text,int.parse(addItemController_price.text)),
+                onPressed: () => addItemToList(addItemController_name.text,
+                    int.parse(addItemController_price.text)),
               ),
             ],
           );
@@ -120,29 +123,28 @@ class _UpdateText extends State<UpdateText> {
     return Column(children: [
       Expanded(
           child: ListView.separated(
-            padding: const EdgeInsets.all(8),
-            itemCount: boxList.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Container(
-                height: 60,
-                child: Center(child: boxItem()),
-              );
-            },
-            separatorBuilder: (BuildContext context,
-                int index) => const Divider(),
-          )),
+        padding: const EdgeInsets.all(8),
+        itemCount: boxList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            height: 60,
+            child: Center(child: boxItem(index)),
+          );
+        },
+        separatorBuilder: (BuildContext context, int index) => const Divider(),
+      )),
       btnWidget(),
     ]);
   }
 
-  Widget boxItem() {
+  Widget boxItem(int index) {
     return CheckboxListTile(
       title: Text("상품"),
-      subtitle: itemContent(boxList[0].name, boxList[0].price),
-      value: _ischecked,
+      subtitle: itemContent(boxList[index].name, boxList[index].price),
+      value: boxList[index].ischecked,
       onChanged: (bool value) {
         setState(() {
-          _ischecked = value;
+          boxList[index].ischecked = value;
         });
       },
       secondary: const Icon(Icons.home),
@@ -160,24 +162,32 @@ class _UpdateText extends State<UpdateText> {
   Widget btnWidget() {
     return Row(children: [
       FlatButton(
-            child:
-            new Text(
-              "DELET",
-              style: new TextStyle(color: Colors.redAccent),
-
-            )
-      ),
+          onPressed: () {
+            deleteItem();
+          },
+          child: new Text(
+            "DELET",
+            style: new TextStyle(color: Colors.redAccent),
+          )),
       FlatButton(
           onPressed: () {
-            addDialog();
+            addItem();
           },
           child: new Text(
             "ADD",
-            style: new TextStyle(color: Colors.redAccent)
-            ,
-          )
-      )
-    ]
-    );
+            style: new TextStyle(color: Colors.redAccent),
+          ))
+    ]);
+  }
+
+  void deleteItem() {
+    setState(() {
+      for (int i = 0; i < boxList.length; i++) {
+        if (boxList[i].ischecked == true) {
+          boxList.removeAt(i);
+        }
+      }
+      listindex = boxList.length;
+    });
   }
 }
