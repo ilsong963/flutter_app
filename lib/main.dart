@@ -81,14 +81,28 @@ class _UpdateText extends State<UpdateText> {
               ],
             ),
             actions: <Widget>[
+
               new FlatButton(
-                child: new Text("확인"),
-                onPressed: () => addItemToList(addItemController_name.text,
-                    int.parse(addItemController_price.text)),
-              ),
+                  child: Text("취소"),
+                  onPressed: () {
+                    resetController();
+                    Navigator.pop(context);
+                  }),
+              new FlatButton(
+                  child: Text("확인"),
+                  onPressed: () {
+                    addItemToList(addItemController_name.text,
+                        int.parse(addItemController_price.text));
+                    resetController();
+                  }),
             ],
           );
         });
+  }
+
+  void resetController() {
+    addItemController_name.text = "";
+    addItemController_price.text = "";
   }
 
   @override
@@ -182,7 +196,7 @@ class _UpdateText extends State<UpdateText> {
 
   void deleteItem() {
     setState(() {
-      for (int i = 0; i < boxList.length; i++) {
+      for (int i = boxList.length-1; i >0; i--) {
         if (boxList[i].ischecked == true) {
           boxList.removeAt(i);
         }
