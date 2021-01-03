@@ -196,7 +196,7 @@ class _UpdateText extends State<UpdateText> {
 
   void deleteItem() {
     setState(() {
-      for (int i = boxList.length-1; i >0; i--) {
+      for (int i = boxList.length-1; i >=0; i--) {
         if (boxList[i].ischecked == true) {
           boxList.removeAt(i);
         }
