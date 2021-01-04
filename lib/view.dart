@@ -1,6 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
+import 'ItemBox.dart';
+import 'db_helper.dart';
+
 class ViewRoute extends StatelessWidget {
   static const String _title = '';
 
@@ -21,20 +24,11 @@ class ViewRoute extends StatelessWidget {
 class UpdateText extends StatefulWidget {
   UpdateText({Key key}) : super(key: key);
 
+  final dbHelper = DatabaseHelper.instance;
   @override
   _UpdateText createState() => _UpdateText();
 }
 
-class ItemBox {
-  String name;
-  int price;
-  bool ischecked = false;
-
-  ItemBox(String name, int price) {
-    this.name = name;
-    this.price = price;
-  }
-}
 
 class _UpdateText extends State<UpdateText> {
   int listindex = 0;
