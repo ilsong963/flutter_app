@@ -1,8 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 import 'ItemBox.dart';
-import 'db_helper.dart';
 
 class ViewRoute extends StatelessWidget {
   static const String _title = '';
@@ -24,14 +24,71 @@ class ViewRoute extends StatelessWidget {
 class UpdateText extends StatefulWidget {
   UpdateText({Key key}) : super(key: key);
 
-  final dbHelper = DatabaseHelper.instance;
   @override
   _UpdateText createState() => _UpdateText();
 }
 
-
 class _UpdateText extends State<UpdateText> {
-  int listindex = 0;
+  Database itemboxDB;
+  List<ItemBox> itemboxList = [
+    ItemBox(
+      id: 1,
+      name: 'apple',
+      price: 1000,
+    )
+  ];
+
+  @override
+  initState() {
+    super.initState();
+    _openDatabase();
+  }
+
+  Future<void> _openDatabase() async {
+    final path = join(await getDatabasesPath(), 'itembox.db');
+    await deleteDatabase(path);
+    itemboxDB = await openDatabase(path, onCreate: (db, version) {
+      return db.execute(
+          "CREATE TABLE itembox(id INTEGER PRIMARY KEY, name TEXT, price INTEGER)");
+    }, version: 1);
+    _insertMember(itemboxList[0]);
+  }
+
+  Future<List<ItemBox>> _getMember() async {
+    final List<Map<String, dynamic>> maps = await itemboxDB?.query('itembox');
+    return List.generate(maps.length, (i) {
+      return ItemBox(
+        id: maps[i]['id'],
+        name: maps[i]['name'],
+        price: maps[i]['price'],
+      );
+    });
+  }
+
+  Future<void> _insertMember(ItemBox itembox) async {
+    await itemboxDB?.insert(
+      'members',
+      itembox.toMap(),
+    );
+  }
+
+  Future<void> _updateMember(ItemBox itembox) async {
+    await itemboxDB?.update(
+      'members',
+      itembox.toMap(),
+      where: 'id = ?',
+      whereArgs: [itembox.id],
+    );
+  }
+
+  Future<void> _deleteMember(int id) async {
+    itemboxDB?.delete(
+      'members',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   final addItemController_name = TextEditingController();
@@ -43,14 +100,12 @@ class _UpdateText extends State<UpdateText> {
 
   void addItemToList(String name, int price) {
     setState(() {
-      boxList.insert(listindex, new ItemBox(name, price));
-      listindex = boxList.length;
+      boxList.insert(boxList.length, new ItemBox());
     });
   }
 
-  void addItem() {
+  void addItem(Context context) {
     showDialog(
-        context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -72,7 +127,6 @@ class _UpdateText extends State<UpdateText> {
               ],
             ),
             actions: <Widget>[
-
               new FlatButton(
                   child: Text("취소"),
                   onPressed: () {
@@ -98,33 +152,6 @@ class _UpdateText extends State<UpdateText> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
-      },
-    );
-    _firebaseMessaging.requestNotificationPermissions(
-        const IosNotificationSettings(
-            sound: true, badge: true, alert: true, provisional: true));
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings) {
-      print("Settings registered: $settings");
-    });
-    _firebaseMessaging.getToken().then((String token) {
-      assert(token != null);
-      print('token :$token');
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Column(children: [
       Expanded(
@@ -147,10 +174,8 @@ class _UpdateText extends State<UpdateText> {
     return CheckboxListTile(
       title: Text("상품"),
       subtitle: itemContent(boxList[index].name, boxList[index].price),
-      value: boxList[index].ischecked,
       onChanged: (bool value) {
         setState(() {
-          boxList[index].ischecked = value;
         });
       },
       secondary: const Icon(Icons.home),
@@ -177,7 +202,7 @@ class _UpdateText extends State<UpdateText> {
           )),
       FlatButton(
           onPressed: () {
-            addItem();
+            addItem(context);
           },
           child: new Text(
             "ADD",
@@ -188,12 +213,6 @@ class _UpdateText extends State<UpdateText> {
 
   void deleteItem() {
     setState(() {
-      for (int i = boxList.length-1; i >=0; i--) {
-        if (boxList[i].ischecked == true) {
-          boxList.removeAt(i);
-        }
-      }
-      listindex = boxList.length;
     });
   }
 }

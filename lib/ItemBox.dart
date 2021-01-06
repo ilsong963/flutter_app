@@ -1,16 +1,14 @@
 
 class ItemBox {
-  String name;
-  int price;
-  bool ischecked = false;
+  final int id;
+  final String name;
+  final int price;
 
-  ItemBox(String name, int price) {
-    this.name = name;
-    this.price = price;
-  }
+  ItemBox({this.id, this.name, this.price});
 
-  @override
-  String toString() {
-    return 'ItemBox{name: $name, name: $price, ischecked: $ischecked}';
-  }
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'name': name,
+    'species': price,
+  };
 }
