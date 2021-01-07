@@ -9,6 +9,6 @@ class ItemBox {
   Map<String, dynamic> toMap() => {
     'id': id,
     'name': name,
-    'species': price,
+    'price': price,
   };
 }
